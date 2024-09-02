@@ -39,4 +39,11 @@ document.addEventListener('DOMContentLoaded', () => {
       draggedElement = null;
     });
   });
+
+  document.addEventListener('mouseup', () => {
+    if (draggedElement) {
+      draggedElement.classList.remove('selected');
+      draggedElement = null;
+    }
+  });
 });
