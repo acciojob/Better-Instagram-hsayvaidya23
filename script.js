@@ -1,49 +1,68 @@
 document.addEventListener('DOMContentLoaded', () => {
-  const images = document.querySelectorAll('.image');
-  let draggedElement = null;
 
-  images.forEach((image) => {
-    image.addEventListener('mousedown', (event) => {
-      draggedElement = event.target;
-      draggedElement.classList.add('selected');
-    });
+const draggables = document.querySelectorAll('.image');
+const container = document.getElementById('parent');
 
-    image.addEventListener('mousemove', (event) => {
-      event.preventDefault();
-    });
+draggables.forEach(draggable => {
+  draggable.addEventListener('dragstart', dragStart);
+  draggable.addEventListener('dragover', dragOver);
+  draggable.addEventListener('dragenter', dragEnter);
+  draggable.addEventListener('dragleave', dragLeave);
+  draggable.addEventListener('drop', drop);
+  draggable.addEventListener('dragend', dragEnd);
+});
 
-    image.addEventListener('mouseup', (event) => {
-      if (draggedElement && event.target !== draggedElement) {
-        // Swap background images
-        const draggedBg = window.getComputedStyle(draggedElement).backgroundImage;
-        const targetBg = window.getComputedStyle(event.target).backgroundImage;
-        draggedElement.style.backgroundImage = targetBg;
-        event.target.style.backgroundImage = draggedBg;
-        
-        // Swap text content
-        const draggedText = draggedElement.textContent;
-        const targetText = event.target.textContent;
-        draggedElement.textContent = targetText;
-        event.target.textContent = draggedText;
-        
-        // Swap IDs
-        const draggedId = draggedElement.id;
-        const targetId = event.target.id;
-        draggedElement.id = targetId;
-        event.target.id = draggedId;
-      }
-      
-      if (draggedElement) {
-        draggedElement.classList.remove('selected');
-      }
-      draggedElement = null;
-    });
-  });
+let draggedElement = null;
 
-  document.addEventListener('mouseup', () => {
-    if (draggedElement) {
-      draggedElement.classList.remove('selected');
-      draggedElement = null;
-    }
-  });
+function dragStart(e) {
+  console.log('Drag started');
+  draggedElement = this;
+  setTimeout(() => this.classList.add('dragging'), 0);
+}
+
+function dragOver(e) {
+  e.preventDefault();
+  console.log('Dragging over');
+}
+
+function dragEnter(e) {
+  e.preventDefault();
+  console.log('Drag entered');
+  this.classList.add('drag-over');
+}
+
+function dragLeave() {
+  console.log('Drag left');
+  this.classList.remove('drag-over');
+}
+
+function drop(e) {
+  e.preventDefault();
+  console.log('Dropped');
+  this.classList.remove('drag-over');
+  if (this !== draggedElement) {
+    swapElements(draggedElement, this);
+  }
+}
+
+function dragEnd() {
+  console.log('Drag ended');
+  this.classList.remove('dragging');
+}
+
+function swapElements(dragged, target) {
+  console.log('Swapping elements');
+  const draggedBackground = window.getComputedStyle(dragged).backgroundImage;
+  const targetBackground = window.getComputedStyle(target).backgroundImage;
+  dragged.style.backgroundImage = targetBackground;
+  target.style.backgroundImage = draggedBackground;
+  const draggedText = dragged.textContent;
+  const targetText = target.textContent;
+  dragged.textContent = targetText;
+  target.textContent = draggedText;
+  const draggedId = dragged.id;
+  const targetId = target.id;
+  dragged.id = targetId;
+  target.id = draggedId;
+}
 });
